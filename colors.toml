@@ -1,0 +1,38 @@
+# Graphite Pine — green-tinted graphite greys, one dark pine accent.
+mode = "dark"
+
+accent = "#4f8f63"
+selection = "#25342b"
+muted = "#3b443e"
+
+background = "#121513"
+dark_background = "#0e100f"
+darker_background = "#0a0c0b"
+lighter_background = "#1b1f1c"
+
+foreground = "#c3cac4"
+dark_foreground = "#6e7870"
+light_foreground = "#d5dbd6"
+bright_foreground = "#e9eeea"
+
+# Deep pine fading into the accent; inactive windows sink into the graphite.
+hyprland_active_border = "rgba(4f8f63ee) rgba(244a33ee) 45deg"
+hyprland_inactive_border = "rgba(2a302caa)"
+
+# Every hue lives in the pine/sage/lichen family so the terminal reads like the
+# topographic wallpaper; red keeps a faint clay warmth so errors still stand out.
+red = "#a8786d"
+yellow = "#a9b89f"
+orange = "#94a283"
+green = "#5f9e72"
+cyan = "#6fa596"
+blue = "#7fb08d"
+magenta = "#8fa89a"
+brown = "#4a5a4c"
+
+bright_red = "#bf9288"
+bright_yellow = "#c3cfba"
+bright_green = "#7fbf91"
+bright_cyan = "#8cc0b1"
+bright_blue = "#9ccaa8"
+bright_magenta = "#a9bfb2"
