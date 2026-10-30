@@ -59,6 +59,38 @@ omarchy plugin add https://github.com/yesheytenzin/live-wallpaper.git --enable
 Then pick it from **Style → Background** (or double-click the desktop). Without the
 plugin Omarchy simply ignores the video.
 
+### Cut corners
+
+Windows, the Omarchy menu and notifications get cut corners: a straight 45°
+bevel instead of a curve, with the pine gradient running along the diagonal.
+
+A theme installed from GitHub can't change these by itself, by design: Omarchy drops a
+repo theme's `.lua` files (you'll see `Ignored … hyprland.lua` on install) and
+themes can't touch shell plugins. One command applies the changes:
+
+```bash
+~/.config/omarchy/themes/graphite-pine/extras/install.sh           # apply
+~/.config/omarchy/themes/graphite-pine/extras/install.sh --remove  # undo
+```
+
+What it does:
+
+- **Windows:** adds a fenced block to `~/.config/hypr/looknfeel.lua` that sets
+  `rounding_power = 1` (a diagonal instead of an arc) and a 12px per-window
+  rounding rule. The global `decoration:rounding` stays 0, because the shell
+  copies that value as a Qt radius, which can only draw curves.
+- **Menu and notifications:** clones the built-in plugins with
+  `omarchy plugin clone` from your installed Omarchy, or patches clones you
+  already have. Then it adds `ChamferSurface.qml`, which draws the
+  cut-corner background and gradient border, and uses it in place of
+  `BorderSurface`. That is two lines in the menu and one in notifications.
+- `--remove` deletes the clones it created (the built-ins come back) and
+  reverts its edits to clones that were yours.
+
+If you keep the theme as your own (a plain folder or a symlink rather than a
+`theme install` clone), the theme's `hyprland.lua` handles windows itself
+while the theme is active, and the script skips that step.
+
 ## Regenerating the art
 
 The scripts in `scripts/` produce every image and the video. They need Python 3 with
