@@ -84,6 +84,10 @@ What it does:
   already have. Then it adds `ChamferSurface.qml`, which draws the
   cut-corner background and gradient border, and uses it in place of
   `BorderSurface`. That is two lines in the menu and one in notifications.
+- **Apps fix:** Omarchy 4.0.6 gives a cloned menu no app list, so its
+  Apps submenu comes up empty. The script adds a copy of the shell's own
+  `AppLibrary` (taken from your installed Omarchy) that the menu uses only
+  when the shell provides none.
 - `--remove` deletes the clones it created (the built-ins come back) and
   reverts its edits to clones that were yours.
 

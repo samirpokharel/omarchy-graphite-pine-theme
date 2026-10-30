@@ -1,0 +1,9 @@
+  // The shell hands cloned menus a null appLibrary (Omarchy 4.0.6), which
+  // leaves Apps empty. Fall back to a local copy of Omarchy's AppLibrary.
+  readonly property var appLibrary: root.shell && root.shell.appLibrary ? root.shell.appLibrary : fallbackAppLibrary.item
+
+  Loader {
+    id: fallbackAppLibrary
+    active: !(root.shell && root.shell.appLibrary)
+    sourceComponent: FallbackAppLibrary { }
+  }

@@ -14,6 +14,7 @@
 #   - menu and notifications: clones the built-in plugin with
 #     `omarchy plugin clone` (or reuses your existing clone), adds
 #     ChamferSurface.qml and swaps BorderSurface for it in two/one places.
+#     The menu also gets an Apps fallback (see patch_menu_apps).
 #     Cloning from your installed Omarchy keeps the rest of the plugin current.
 #   - windows: adds a fenced block to ~/.config/hypr/looknfeel.lua, unless the
 #     theme's own hyprland.lua already applies (a theme you own, not a clone).
@@ -63,6 +64,21 @@ patch_menu() {
   perl -0pi -e 's/^(\s*)BorderSurface \{\n(\s*)id: card\n/$1ChamferSurface {\n$2id: card\n$2cut: 12\n/m;
                 s/delegate: BorderSurface \{\n(\s*)id: row\n/delegate: ChamferSurface {\n$1id: row\n$1cut: 6\n/' "$file"
   grep -q 'ChamferSurface {' "$file" && say "menu: cut corners" || say "menu: Menu.qml layout changed, not patched"
+  patch_menu_apps "$dir"
+}
+
+# Omarchy 4.0.6 gives a cloned menu a null appLibrary, so its Apps submenu
+# is empty. Bundle a copy of the shell's own AppLibrary (taken from the
+# installed Omarchy, so it matches) and use it only when the shell's is null.
+patch_menu_apps() {
+  local dir=$1 file=$1/Menu.qml
+  local services="${OMARCHY_PATH:-/usr/share/omarchy}/shell/services"
+  cp "$services/AppLibrary.qml" "$dir/FallbackAppLibrary.qml"
+  cp "$services/AppSearch.js" "$dir/"
+  grep -q 'FallbackAppLibrary' "$file" && { say "menu: apps fallback"; return; }
+  BLOCK=$(<"$here/shell/menu-apps-fallback.qml.part") perl -0pi -e \
+    's/^  readonly property var appLibrary: root\.shell \? root\.shell\.appLibrary : null\n/$ENV{BLOCK}\n/m' "$file"
+  grep -q 'FallbackAppLibrary' "$file" && say "menu: apps fallback" || say "menu: appLibrary line changed, apps fallback not added"
 }
 
 patch_notifications() {
@@ -86,6 +102,10 @@ unpatch() {
   # Your own clone: put BorderSurface back and leave everything else alone.
   find "$dir" -name '*.qml' -exec perl -0pi -e 's/ChamferSurface \{\n(\s*)id: (card|row|root)\n\s*cut: \d+\n/BorderSurface {\n$1id: $2\n/g' {} +
   find "$dir" -name ChamferSurface.qml -delete
+  if [[ -f $dir/FallbackAppLibrary.qml ]]; then
+    perl -0pi -e 's/^  \/\/ The shell hands cloned menus.*?^  \}\n/  readonly property var appLibrary: root.shell ? root.shell.appLibrary : null\n/ms' "$dir/Menu.qml"
+    rm -f "$dir/FallbackAppLibrary.qml" "$dir/AppSearch.js"
+  fi
   say "$name: back to BorderSurface"
 }
 
